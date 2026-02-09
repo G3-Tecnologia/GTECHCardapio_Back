@@ -1,0 +1,23 @@
+package com.example.cardapio.repository;
+
+import com.example.cardapio.model.Produto;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
+
+import java.time.LocalDateTime;
+import java.util.List;
+
+@Repository
+public interface ProdutoRepository extends JpaRepository<Produto, Long> {
+    List<Produto> findByGrupoId(Long grupoId);
+
+    @Query("SELECT p FROM Produto p WHERE p.promocao = 'S' " +
+            "AND :agora BETWEEN p.dataInicioPromocao AND p.dataFimPromocao")
+    List<Produto> findPromocionais(@Param("agora") LocalDateTime agora);
+
+    @Query("SELECT p FROM Produto p WHERE LOWER(p.descricao) LIKE LOWER(CONCAT('%', :descricao, '%')) " +
+            "ORDER BY CASE WHEN LOWER(p.descricao) LIKE LOWER(CONCAT(:descricao, '%')) THEN 0 ELSE 1 END, p.descricao")
+    List<Produto> findByDescricaoPrioritized(@Param("descricao") String descricao);
+}

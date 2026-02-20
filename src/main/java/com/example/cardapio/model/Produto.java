@@ -13,12 +13,16 @@ public class Produto {
     private Long id;
 
     @Column(nullable = false)
+    @jakarta.validation.constraints.NotBlank(message = "O nome é obrigatório")
     private String nome;
 
     @Column(nullable = false)
+    @jakarta.validation.constraints.NotBlank(message = "A descrição é obrigatória")
     private String descricao;
 
     @Column(nullable = false)
+    @jakarta.validation.constraints.NotNull(message = "O preço é obrigatório")
+    @jakarta.validation.constraints.PositiveOrZero(message = "O preço deve ser positivo ou zero")
     private BigDecimal preco;
 
     @Column(name = "valor_venda")
@@ -40,6 +44,7 @@ public class Produto {
 
     @ManyToOne
     @JoinColumn(name = "id_grupo", nullable = false)
+    @jakarta.validation.constraints.NotNull(message = "O grupo é obrigatório")
     private Grupo grupo;
 
     public Produto() {

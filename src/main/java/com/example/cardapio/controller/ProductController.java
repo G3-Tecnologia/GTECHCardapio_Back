@@ -1,56 +1,40 @@
 package com.example.cardapio.controller;
 
-import com.example.cardapio.model.Grupo;
 import com.example.cardapio.model.Produto;
-import com.example.cardapio.service.CardapioService;
+import com.example.cardapio.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/cardapio")
+@RequestMapping("/cardapio/produtos")
 @CrossOrigin(origins = "*")
-public class CardapioController {
+public class ProductController {
 
-    private final CardapioService service;
+    private final ProductService service;
 
     @Autowired
-    public CardapioController(CardapioService service) {
+    public ProductController(ProductService service) {
         this.service = service;
     }
 
-    @GetMapping("/ping")
-    public String ping() {
-        return "Controller Cardapio está ativo!";
-    }
-
-    @GetMapping("/grupos")
-    public List<Grupo> listarGrupos() {
-        return service.listarGrupos();
-    }
-
-    @PostMapping("/grupos")
-    public Grupo adicionarGrupo(@RequestBody Grupo grupo) {
-        return service.salvarGrupo(grupo);
-    }
-
-    @GetMapping("/produtos/grupo/{id}")
+    @GetMapping("/grupo/{id}")
     public List<Produto> listarProdutosPorGrupo(@PathVariable Long id) {
         return service.listarProdutosPorGrupo(id);
     }
 
-    @GetMapping("/produtos")
+    @GetMapping
     public List<Produto> listarTodosProdutos() {
         return service.listarTodosProdutos();
     }
 
-    @GetMapping("/produtos/promocionais")
+    @GetMapping("/promocionais")
     public List<Produto> listarProdutosPromocionais() {
         return service.listarProdutosPromocionais();
     }
 
-    @PostMapping("/produtos")
+    @PostMapping
     public Produto adicionarProduto(@RequestBody Produto produto) {
         return service.salvarProduto(produto);
     }

@@ -5,68 +5,55 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "produto")
+@org.hibernate.annotations.Immutable
+@Table(name = "view_cheff_produto")
 public class Produto {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, name = "name")
     @jakarta.validation.constraints.NotBlank(message = "O nome é obrigatório")
-    private String nome;
+    private String name;
 
-    @Column(nullable = false)
-    @jakarta.validation.constraints.NotBlank(message = "A descrição é obrigatória")
-    private String descricao;
-
-    @Column(nullable = false)
+    @Column(name = "price")
     @jakarta.validation.constraints.NotNull(message = "O preço é obrigatório")
     @jakarta.validation.constraints.PositiveOrZero(message = "O preço deve ser positivo ou zero")
-    private BigDecimal preco;
+    private BigDecimal price;
 
-    @Column(name = "valor_venda")
-    private BigDecimal valorVenda;
-
-    @Column(length = 1)
-    private String promocao;
-
-    @Column(name = "preco_promocional")
-    private BigDecimal precoPromocional;
-
-    @Column(name = "data_inicio_promocao")
-    private LocalDateTime dataInicioPromocao;
-
-    @Column(name = "data_fim_promocao")
-    private LocalDateTime dataFimPromocao;
+    @Column(name = "preparationTime")
+    private String preparationTime;
 
     private String imagem;
 
     @ManyToOne
-    @JoinColumn(name = "id_grupo", nullable = false)
+    @JoinColumn(name = "groupId", nullable = false)
     @jakarta.validation.constraints.NotNull(message = "O grupo é obrigatório")
     private Grupo grupo;
+
+    /*
+     * TODO: Promoções serão reativadas no futuro na view
+     * 
+     * @Column(length = 1)
+     * private String promocao;
+     * 
+     * @Column(name = "preco_promocional")
+     * private BigDecimal precoPromocional;
+     * 
+     * @Column(name = "data_inicio_promocao")
+     * private LocalDateTime dataInicioPromocao;
+     * 
+     * @Column(name = "data_fim_promocao")
+     * private LocalDateTime dataFimPromocao;
+     */
 
     public Produto() {
     }
 
-    public Produto(String nome, String descricao, BigDecimal preco, String imagem, Grupo grupo) {
-        this.nome = nome;
-        this.descricao = descricao;
-        this.preco = preco;
-        this.imagem = imagem;
-        this.grupo = grupo;
-        this.promocao = "N";
-    }
-
-    public Produto(String nome, String descricao, BigDecimal preco, BigDecimal valorVenda, String promocao,
-            BigDecimal precoPromocional, String imagem, Grupo grupo) {
-        this.nome = nome;
-        this.descricao = descricao;
-        this.preco = preco;
-        this.valorVenda = valorVenda;
-        this.promocao = promocao;
-        this.precoPromocional = precoPromocional;
+    public Produto(String name, BigDecimal price, String preparationTime, String imagem, Grupo grupo) {
+        this.name = name;
+        this.price = price;
+        this.preparationTime = preparationTime;
         this.imagem = imagem;
         this.grupo = grupo;
     }
@@ -80,68 +67,28 @@ public class Produto {
         this.id = id;
     }
 
-    public String getNome() {
-        return nome;
+    public String getName() {
+        return name;
     }
 
-    public void setNome(String nome) {
-        this.nome = nome;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public String getDescricao() {
-        return descricao;
+    public BigDecimal getPrice() {
+        return price;
     }
 
-    public void setDescricao(String descricao) {
-        this.descricao = descricao;
+    public void setPrice(BigDecimal price) {
+        this.price = price;
     }
 
-    public BigDecimal getPreco() {
-        return preco;
+    public String getPreparationTime() {
+        return preparationTime;
     }
 
-    public void setPreco(BigDecimal preco) {
-        this.preco = preco;
-    }
-
-    public BigDecimal getValorVenda() {
-        return valorVenda;
-    }
-
-    public void setValorVenda(BigDecimal valorVenda) {
-        this.valorVenda = valorVenda;
-    }
-
-    public String getPromocao() {
-        return promocao;
-    }
-
-    public void setPromocao(String promocao) {
-        this.promocao = promocao;
-    }
-
-    public BigDecimal getPrecoPromocional() {
-        return precoPromocional;
-    }
-
-    public void setPrecoPromocional(BigDecimal precoPromocional) {
-        this.precoPromocional = precoPromocional;
-    }
-
-    public LocalDateTime getDataInicioPromocao() {
-        return dataInicioPromocao;
-    }
-
-    public void setDataInicioPromocao(LocalDateTime dataInicioPromocao) {
-        this.dataInicioPromocao = dataInicioPromocao;
-    }
-
-    public LocalDateTime getDataFimPromocao() {
-        return dataFimPromocao;
-    }
-
-    public void setDataFimPromocao(LocalDateTime dataFimPromocao) {
-        this.dataFimPromocao = dataFimPromocao;
+    public void setPreparationTime(String preparationTime) {
+        this.preparationTime = preparationTime;
     }
 
     public String getImagem() {
@@ -159,4 +106,38 @@ public class Produto {
     public void setGrupo(Grupo grupo) {
         this.grupo = grupo;
     }
+
+    /*
+     * public String getPromocao() {
+     * return promocao;
+     * }
+     * 
+     * public void setPromocao(String promocao) {
+     * this.promocao = promocao;
+     * }
+     * 
+     * public BigDecimal getPrecoPromocional() {
+     * return precoPromocional;
+     * }
+     * 
+     * public void setPrecoPromocional(BigDecimal precoPromocional) {
+     * this.precoPromocional = precoPromocional;
+     * }
+     * 
+     * public LocalDateTime getDataInicioPromocao() {
+     * return dataInicioPromocao;
+     * }
+     * 
+     * public void setDataInicioPromocao(LocalDateTime dataInicioPromocao) {
+     * this.dataInicioPromocao = dataInicioPromocao;
+     * }
+     * 
+     * public LocalDateTime getDataFimPromocao() {
+     * return dataFimPromocao;
+     * }
+     * 
+     * public void setDataFimPromocao(LocalDateTime dataFimPromocao) {
+     * this.dataFimPromocao = dataFimPromocao;
+     * }
+     */
 }

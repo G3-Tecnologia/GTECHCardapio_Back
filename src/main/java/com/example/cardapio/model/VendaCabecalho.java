@@ -1,28 +1,25 @@
 package com.example.cardapio.model;
 
 import jakarta.persistence.*;
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
 @Table(name = "gc_venda_cabecalho")
 public class VendaCabecalho {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "data_venda")
-    private LocalDateTime dataVenda;
-
-    @Column(name = "valor_total")
-    private Double valorTotal;
-
-    @Column(name = "atendente_id")
-    private Long atendenteId;
-
     @OneToMany(mappedBy = "vendaCabecalho", cascade = CascadeType.ALL)
     @com.fasterxml.jackson.annotation.JsonManagedReference
     private List<VendaDetalhe> detalhes;
+
+    @Column(name = "ATENDENTE_ID")
+    private Long atendenteId;
+
+    @Column(name = "ID_MESA")
+    private Long idMesa;
 
     public Long getId() {
         return id;
@@ -32,20 +29,12 @@ public class VendaCabecalho {
         this.id = id;
     }
 
-    public LocalDateTime getDataVenda() {
-        return dataVenda;
+    public List<VendaDetalhe> getDetalhes() {
+        return detalhes;
     }
 
-    public void setDataVenda(LocalDateTime dataVenda) {
-        this.dataVenda = dataVenda;
-    }
-
-    public Double getValorTotal() {
-        return valorTotal;
-    }
-
-    public void setValorTotal(Double valorTotal) {
-        this.valorTotal = valorTotal;
+    public void setDetalhes(List<VendaDetalhe> detalhes) {
+        this.detalhes = detalhes;
     }
 
     public Long getAtendenteId() {
@@ -56,11 +45,34 @@ public class VendaCabecalho {
         this.atendenteId = atendenteId;
     }
 
-    public List<VendaDetalhe> getDetalhes() {
-        return detalhes;
+    public Long getIdMesa() {
+        return idMesa;
     }
 
-    public void setDetalhes(List<VendaDetalhe> detalhes) {
-        this.detalhes = detalhes;
+    public void setIdMesa(Long idMesa) {
+        this.idMesa = idMesa;
     }
+
+    @Column(name = "encerrada")
+    private Boolean encerrada = false;
+
+    @Column(name = "cancelada")
+    private Boolean cancelada = false;
+
+    public Boolean getEncerrada() {
+        return encerrada;
+    }
+
+    public void setEncerrada(Boolean encerrada) {
+        this.encerrada = encerrada;
+    }
+
+    public Boolean getCancelada() {
+        return cancelada;
+    }
+
+    public void setCancelada(Boolean cancelada) {
+        this.cancelada = cancelada;
+    }
+
 }

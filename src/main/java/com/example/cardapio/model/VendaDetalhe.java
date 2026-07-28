@@ -9,11 +9,6 @@ public class VendaDetalhe {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "produto_descricao")
-    private String produtoDescricao;
-
-    private String observacao;
-
     private Integer quantidade;
 
     @ManyToOne
@@ -21,17 +16,23 @@ public class VendaDetalhe {
     @com.fasterxml.jackson.annotation.JsonBackReference
     private VendaCabecalho vendaCabecalho;
 
-    @Column(name = "valor_unitario")
-    private Double valorUnitario;
-
-    @Column(name = "VALORPRODUTO")
-    private Double valorProduto;
-
     @Column(name = "ID_ATENDENTE")
     private Long idAtendente;
 
-    @Column(name = "produto_id")
+    @Column(name = "PRODUTO_ID")
     private Long produtoId;
+
+    @Column(name = "CANCELADO")
+    private Boolean cancelado;
+
+    @Column(name = "PRODUTO_DESCRICAO")
+    private String produtoDescricao;
+
+    @Column(name = "OBSERVACAO")
+    private String observacao;
+
+    @Column(name = "VALORPRODUTO")
+    private Double valorProduto;
 
     public VendaCabecalho getVendaCabecalho() {
         return vendaCabecalho;
@@ -47,6 +48,38 @@ public class VendaDetalhe {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public Integer getQuantidade() {
+        return quantidade;
+    }
+
+    public void setQuantidade(Integer quantidade) {
+        this.quantidade = quantidade;
+    }
+
+    public Long getIdAtendente() {
+        return idAtendente;
+    }
+
+    public void setIdAtendente(Long idAtendente) {
+        this.idAtendente = idAtendente;
+    }
+
+    public Long getProdutoId() {
+        return produtoId;
+    }
+
+    public void setProdutoId(Long produtoId) {
+        this.produtoId = produtoId;
+    }
+
+    public Boolean getCancelado() {
+        return cancelado;
+    }
+
+    public void setCancelado(Boolean cancelado) {
+        this.cancelado = cancelado;
     }
 
     public String getProdutoDescricao() {
@@ -65,43 +98,11 @@ public class VendaDetalhe {
         this.observacao = observacao;
     }
 
-    public Integer getQuantidade() {
-        return quantidade;
-    }
-
-    public void setQuantidade(Integer quantidade) {
-        this.quantidade = quantidade;
-    }
-
-    public Double getValorUnitario() {
-        return valorUnitario;
-    }
-
-    public void setValorUnitario(Double valorUnitario) {
-        this.valorUnitario = valorUnitario;
-    }
-
     public Double getValorProduto() {
         return valorProduto;
     }
 
     public void setValorProduto(Double valorProduto) {
         this.valorProduto = valorProduto;
-    }
-
-    public Long getIdAtendente() {
-        return idAtendente;
-    }
-
-    public void setIdAtendente(Long idAtendente) {
-        this.idAtendente = idAtendente;
-    }
-
-    public Long getProdutoId() {
-        return produtoId;
-    }
-
-    public void setProdutoId(Long produtoId) {
-        this.produtoId = produtoId;
     }
 }

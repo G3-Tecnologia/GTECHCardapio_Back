@@ -13,11 +13,13 @@ import java.util.List;
 public interface ProdutoRepository extends JpaRepository<Produto, Long> {
     List<Produto> findByGrupoId(Long grupoId);
 
+    /*
     @Query("SELECT p FROM Produto p WHERE p.promocao = 'S' " +
             "AND :agora BETWEEN p.dataInicioPromocao AND p.dataFimPromocao")
     List<Produto> findPromocionais(@Param("agora") LocalDateTime agora);
+    */
 
-    @Query("SELECT p FROM Produto p WHERE LOWER(p.descricao) LIKE LOWER(CONCAT('%', :descricao, '%')) " +
-            "ORDER BY CASE WHEN LOWER(p.descricao) LIKE LOWER(CONCAT(:descricao, '%')) THEN 0 ELSE 1 END, p.descricao")
+    @Query("SELECT p FROM Produto p WHERE LOWER(p.name) LIKE LOWER(CONCAT('%', :descricao, '%')) " +
+            "ORDER BY CASE WHEN LOWER(p.name) LIKE LOWER(CONCAT(:descricao, '%')) THEN 0 ELSE 1 END, p.name")
     List<Produto> findByDescricaoPrioritized(@Param("descricao") String descricao);
 }

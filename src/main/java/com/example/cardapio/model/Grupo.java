@@ -6,6 +6,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "grupo")
+@org.hibernate.annotations.SQLRestriction("excluido = 0")
 public class Grupo {
 
     @Id
@@ -22,6 +23,9 @@ public class Grupo {
     @JsonIgnore
     @OneToMany(mappedBy = "grupo", cascade = CascadeType.ALL)
     private List<Produto> produtos;
+
+    @Column(name = "excluido", columnDefinition = "TINYINT(1)")
+    private Boolean excluido = false;
 
     public Grupo() {
     }
@@ -62,5 +66,13 @@ public class Grupo {
 
     public void setProdutos(List<Produto> produtos) {
         this.produtos = produtos;
+    }
+
+    public Boolean getExcluido() {
+        return excluido;
+    }
+
+    public void setExcluido(Boolean excluido) {
+        this.excluido = excluido;
     }
 }

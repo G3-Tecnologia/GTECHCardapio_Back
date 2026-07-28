@@ -22,17 +22,21 @@ public class ProductService {
         return produtoRepository.findByGrupoId(grupoId);
     }
 
+    /*
     public Produto salvarProduto(Produto produto) {
         return produtoRepository.save(produto);
     }
+    */
 
     public List<Produto> listarTodosProdutos() {
         return produtoRepository.findAll();
     }
 
+    /*
     public List<Produto> listarProdutosPromocionais() {
         return produtoRepository.findPromocionais(LocalDateTime.now());
     }
+    */
 
     public List<Produto> pesquisarProdutos(String descricao) {
         return produtoRepository.findByDescricaoPrioritized(descricao);

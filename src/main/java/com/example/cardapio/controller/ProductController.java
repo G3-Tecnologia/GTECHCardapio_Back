@@ -29,6 +29,7 @@ public class ProductController {
         return service.listarTodosProdutos();
     }
 
+    /*
     @GetMapping("/promocionais")
     public List<Produto> listarProdutosPromocionais() {
         return service.listarProdutosPromocionais();
@@ -38,6 +39,7 @@ public class ProductController {
     public Produto adicionarProduto(@RequestBody Produto produto) {
         return service.salvarProduto(produto);
     }
+    */
 
     @GetMapping("/busca")
     public List<Produto> buscarProdutos(@RequestParam String descricao) {

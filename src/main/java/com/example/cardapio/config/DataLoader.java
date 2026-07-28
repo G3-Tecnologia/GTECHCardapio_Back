@@ -29,16 +29,15 @@ public class DataLoader {
 
                                 grupoRepository.saveAll(List.of(grupoPizzas, grupoBurgers, grupoBebidas));
 
+                                /*
                                 // Criando Produtos para Pizzas
                                 Produto pizza1 = new Produto("Pizza Margherita",
-                                                "Molho de tomate, mussarela e manjericão",
                                                 new BigDecimal("45.00"),
                                                 "https://images.unsplash.com/photo-1574071318508-1cdbad80ad50",
                                                 grupoPizzas);
 
                                 // Criando Produtos para Burgers
                                 Produto burger1 = new Produto("Hambúrguer Gourmet",
-                                                "Pão brioche, carne 180g, queijo cheddar e bacon",
                                                 new BigDecimal("32.50"),
                                                 "https://images.unsplash.com/photo-1568901346375-23c9450c58cd",
                                                 grupoBurgers);
@@ -50,12 +49,13 @@ public class DataLoader {
                                 burger1.setDataFimPromocao(LocalDateTime.now().plusDays(7)); // Termina em 7 dias
 
                                 // Criando Produtos para Bebidas
-                                Produto suco1 = new Produto("Suco de Laranja", "Suco natural feito na hora 500ml",
+                                Produto suco1 = new Produto("Suco de Laranja", 
                                                 new BigDecimal("12.00"),
                                                 "https://images.unsplash.com/photo-1613478223719-2ab802602423",
                                                 grupoBebidas);
 
                                 produtoRepository.saveAll(List.of(pizza1, burger1, suco1));
+                                */
 
                                 System.out.println("Banco de dados populado com grupos e produtos iniciais!");
                         }

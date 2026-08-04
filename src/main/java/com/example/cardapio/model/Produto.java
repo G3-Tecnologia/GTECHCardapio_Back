@@ -2,7 +2,6 @@ package com.example.cardapio.model;
 
 import jakarta.persistence.*;
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 
 @Entity
 @org.hibernate.annotations.Immutable
@@ -32,7 +31,6 @@ public class Produto {
     private Grupo grupo;
 
     /*
-     * TODO: Promoções serão reativadas no futuro na view
      * 
      * @Column(length = 1)
      * private String promocao;

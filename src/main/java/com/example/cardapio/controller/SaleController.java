@@ -63,6 +63,15 @@ public class SaleController {
     }
 
     /**
+     * POST /cardapio/venda/mesa/{idMesa}/solicitar-conta
+     * Marca a venda atual da mesa como solicitadoConta = true
+     */
+    @PostMapping("/mesa/{idMesa}/solicitar-conta")
+    public com.example.cardapio.model.VendaCabecalho solicitarConta(@PathVariable Long idMesa) {
+        return service.solicitarConta(idMesa);
+    }
+
+    /**
      * GET /cardapio/venda/stream
      * Abre uma conexão SSE (Server-Sent Events) que recebe os pedidos ativos em
      * tempo real,

@@ -21,6 +21,18 @@ public class VendaCabecalho {
     @Column(name = "ID_MESA")
     private Long idMesa;
 
+    @Column(name = "encerrada")
+    private Boolean encerrada = false;
+
+    @Column(name = "cancelada")
+    private Boolean cancelada = false;
+
+    @Column(name = "solicitado_conta")
+    private Boolean solicitadoConta = false;
+
+    @Column(name = "TAXA_GARCOM")
+    private Double taxaGarcom;
+
     public Long getId() {
         return id;
     }
@@ -53,12 +65,6 @@ public class VendaCabecalho {
         this.idMesa = idMesa;
     }
 
-    @Column(name = "encerrada")
-    private Boolean encerrada = false;
-
-    @Column(name = "cancelada")
-    private Boolean cancelada = false;
-
     public Boolean getEncerrada() {
         return encerrada;
     }
@@ -73,6 +79,22 @@ public class VendaCabecalho {
 
     public void setCancelada(Boolean cancelada) {
         this.cancelada = cancelada;
+    }
+
+    public Boolean getSolicitadoConta() {
+        return solicitadoConta;
+    }
+
+    public void setSolicitadoConta(Boolean solicitadoConta) {
+        this.solicitadoConta = solicitadoConta;
+    }
+
+    public Double getTaxaGarcom() {
+        return taxaGarcom;
+    }
+
+    public void setTaxaGarcom(Double taxaGarcom) {
+        this.taxaGarcom = taxaGarcom;
     }
 
 }

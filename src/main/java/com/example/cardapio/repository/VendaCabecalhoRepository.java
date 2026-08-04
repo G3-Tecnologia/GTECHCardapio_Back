@@ -9,4 +9,7 @@ import java.util.Optional;
 @Repository
 public interface VendaCabecalhoRepository extends JpaRepository<VendaCabecalho, Long> {
     Optional<VendaCabecalho> findFirstByIdMesaAndEncerradaFalseAndCanceladaFalseOrderByIdDesc(Long idMesa);
+
+    @org.springframework.data.jpa.repository.Query(value = "SELECT cd_cheff_porc_taxa_servico FROM configuracao_default LIMIT 1", nativeQuery = true)
+    Object findTaxaServicoDefault();
 }

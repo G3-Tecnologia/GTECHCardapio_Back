@@ -1,15 +1,12 @@
 package com.example.cardapio.config;
 
 import com.example.cardapio.model.Grupo;
-import com.example.cardapio.model.Produto;
 import com.example.cardapio.repository.GrupoRepository;
 import com.example.cardapio.repository.ProdutoRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Configuration

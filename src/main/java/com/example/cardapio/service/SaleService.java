@@ -40,6 +40,17 @@ public class SaleService {
                     novo.setAtendenteId(1L); // Default attendant ID
                     novo.setEncerrada(false);
                     novo.setCancelada(false);
+                    
+                    try {
+                        Object taxaServicoObj = vendaCabecalhoRepository.findTaxaServicoDefault();
+                        if (taxaServicoObj != null) {
+                            Double taxaServico = Double.valueOf(taxaServicoObj.toString());
+                            novo.setTaxaGarcom(taxaServico);
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
                     return vendaCabecalhoRepository.save(novo);
                 });
 
@@ -96,5 +107,15 @@ public class SaleService {
         return resultado.stream()
                 .map(StatusItemPedidoDTO::from)
                 .toList();
+    }
+
+    @Transactional
+    public com.example.cardapio.model.VendaCabecalho solicitarConta(Long idMesa) {
+        com.example.cardapio.model.VendaCabecalho cabecalho = vendaCabecalhoRepository
+                .findFirstByIdMesaAndEncerradaFalseAndCanceladaFalseOrderByIdDesc(idMesa)
+                .orElseThrow(() -> new RuntimeException("Nenhuma venda em aberto encontrada para esta mesa"));
+        
+        cabecalho.setSolicitadoConta(true);
+        return vendaCabecalhoRepository.save(cabecalho);
     }
 }

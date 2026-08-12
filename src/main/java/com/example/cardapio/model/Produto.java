@@ -2,6 +2,7 @@ package com.example.cardapio.model;
 
 import jakarta.persistence.*;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Entity
 @org.hibernate.annotations.Immutable
@@ -30,20 +31,17 @@ public class Produto {
     @jakarta.validation.constraints.NotNull(message = "O grupo é obrigatório")
     private Grupo grupo;
 
-    /*
-     * 
-     * @Column(length = 1)
-     * private String promocao;
-     * 
-     * @Column(name = "preco_promocional")
-     * private BigDecimal precoPromocional;
-     * 
-     * @Column(name = "data_inicio_promocao")
-     * private LocalDateTime dataInicioPromocao;
-     * 
-     * @Column(name = "data_fim_promocao")
-     * private LocalDateTime dataFimPromocao;
-     */
+    @Column(length = 1)
+    private String promocao;
+
+    @Column(name = "preco_promocional")
+    private BigDecimal precoPromocional;
+
+    @Column(name = "data_inicio_promocao")
+    private LocalDateTime dataInicioPromocao;
+
+    @Column(name = "data_fim_promocao")
+    private LocalDateTime dataFimPromocao;
 
     public Produto() {
     }

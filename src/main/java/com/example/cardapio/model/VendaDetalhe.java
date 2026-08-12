@@ -34,6 +34,17 @@ public class VendaDetalhe {
     @Column(name = "VALORPRODUTO")
     private Double valorProduto;
 
+    @Column(name = "id_gc_link_mesa_comanda")
+    private Long idGcLinkMesaComanda;
+
+    public Long getIdGcLinkMesaComanda() {
+        return idGcLinkMesaComanda;
+    }
+
+    public void setIdGcLinkMesaComanda(Long idGcLinkMesaComanda) {
+        this.idGcLinkMesaComanda = idGcLinkMesaComanda;
+    }
+
     public VendaCabecalho getVendaCabecalho() {
         return vendaCabecalho;
     }

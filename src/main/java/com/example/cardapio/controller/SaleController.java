@@ -1,10 +1,10 @@
 package com.example.cardapio.controller;
 
-import com.example.cardapio.dto.StatusItemPedidoDTO;
-import com.example.cardapio.dto.VendaItemDTO;
+import com.example.cardapio.dto.*;
 import com.example.cardapio.service.SaleService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -34,6 +34,33 @@ public class SaleController {
         this.objectMapper.disable(com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
     }
 
+    /**
+     * GET /cardapio/venda/mesa/{idMesa}/status
+     * Retorna se a mesa possui uma comanda em aberto (via query SELECT * FROM gc_venda_cabecalho WHERE id_mesa = :idMesa AND NOT ENCERRADA AND NOT CANCELADA).
+     */
+    @GetMapping("/mesa/{idMesa}/status")
+    public MesaStatusResponseDTO getMesaStatus(@PathVariable Long idMesa) {
+        return service.verificarStatusMesa(idMesa);
+    }
+
+    /**
+     * GET /cardapio/venda/mesa/{idMesa}/pedidos
+     * Retorna todos os pedidos da mesa agrupados por cliente, trazendo o nome do cliente.
+     */
+    @GetMapping("/mesa/{idMesa}/pedidos")
+    public List<PedidoMesaGroupDTO> getPedidosMesa(@PathVariable Long idMesa) {
+        return service.listarPedidosMesa(idMesa);
+    }
+
+    /**
+     * POST /cardapio/venda/mesa/entrar
+     * Cadastra a entrada do cliente na mesa, gerando um registro em gc_link_mesa_comanda.
+     */
+    @PostMapping("/mesa/entrar")
+    public ClienteEntradaResponseDTO entrarNaMesa(@Valid @RequestBody ClienteEntradaDTO dto) {
+        return service.entrarNaMesa(dto);
+    }
+
     /** Registra um novo pedido. */
     @PostMapping
     public com.example.cardapio.model.VendaCabecalho registrarVenda(
@@ -44,8 +71,7 @@ public class SaleController {
 
     /**
      * GET /cardapio/venda/ativos
-     * Retorna snapshot atual dos pedidos ativos com nome do produto de
-     * produto.DESCRICAOPDV.
+     * Retorna snapshot atual dos pedidos ativos com nome do produto de produto.DESCRICAOPDV.
      */
     @GetMapping("/ativos")
     public List<StatusItemPedidoDTO> getPedidosAtivos() {
@@ -55,10 +81,9 @@ public class SaleController {
     /**
      * GET /cardapio/venda/{id}/status
      * Retorna o status atual de cada item de um pedido específico.
-     * Usado pelo front-end do cliente para acompanhar o pedido em tempo real.
      */
     @GetMapping("/{id}/status")
-    public List<com.example.cardapio.dto.StatusItemPedidoDTO> getStatusPedido(@PathVariable Long id) {
+    public List<StatusItemPedidoDTO> getStatusPedido(@PathVariable Long id) {
         return service.getStatusPedido(id);
     }
 
@@ -72,16 +97,17 @@ public class SaleController {
     }
 
     /**
+     * POST /cardapio/venda/solicitar-conta-parcial
+     * Solicita conta parcial ou total vinculada aos itens / cliente.
+     */
+    @PostMapping("/solicitar-conta-parcial")
+    public com.example.cardapio.model.VendaCabecalho solicitarContaParcial(@RequestBody SolicitacaoContaParcialDTO dto) {
+        return service.solicitarContaParcial(dto);
+    }
+
+    /**
      * GET /cardapio/venda/stream
-     * Abre uma conexão SSE (Server-Sent Events) que recebe os pedidos ativos em
-     * tempo real,
-     * com atualização automática a cada 3 segundos.
-     *
-     * Uso no front-end:
-     * const source = new
-     * EventSource('http://localhost:8081/cardapio/venda/stream');
-     * source.addEventListener('pedidos-ativos', e => { ... JSON.parse(e.data) ...
-     * });
+     * Abre uma conexão SSE (Server-Sent Events) que recebe os pedidos ativos em tempo real.
      */
     @GetMapping(value = "/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public SseEmitter streamPedidosAtivos() {
@@ -93,7 +119,6 @@ public class SaleController {
 
         emitters.add(emitter);
 
-        // Envia o estado atual imediatamente ao conectar
         try {
             List<StatusItemPedidoDTO> ativos = service.listarPedidosAtivos();
             emitter.send(SseEmitter.event()
@@ -108,8 +133,7 @@ public class SaleController {
     }
 
     /**
-     * Tarefa agendada: a cada 3 segundos, faz broadcast dos pedidos ativos
-     * para todos os clientes SSE conectados.
+     * Tarefa agendada: a cada 3 segundos, faz broadcast dos pedidos ativos.
      */
     @Scheduled(fixedDelay = 3000)
     public void broadcastPedidosAtivos() {

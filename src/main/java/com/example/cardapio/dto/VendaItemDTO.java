@@ -13,5 +13,7 @@ public record VendaItemDTO(
 
         @NotNull(message = "O valor unitário é obrigatório") Double valorUnitario,
 
-        Long produtoId) {
+        Long produtoId,
+
+        Long idGcLinkMesaComanda) {
 }

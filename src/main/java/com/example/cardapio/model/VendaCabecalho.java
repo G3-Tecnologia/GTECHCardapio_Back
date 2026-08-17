@@ -21,10 +21,10 @@ public class VendaCabecalho {
     @Column(name = "ID_MESA")
     private Long idMesa;
 
-    @Column(name = "encerrada")
+    @Column(name = "ENCERRADA")
     private Boolean encerrada = false;
 
-    @Column(name = "cancelada")
+    @Column(name = "CANCELADA")
     private Boolean cancelada = false;
 
     @Column(name = "solicitado_conta")
@@ -96,5 +96,4 @@ public class VendaCabecalho {
     public void setTaxaGarcom(Double taxaGarcom) {
         this.taxaGarcom = taxaGarcom;
     }
-
 }

@@ -2,6 +2,7 @@ package com.example.cardapio.controller;
 
 import com.example.cardapio.model.Grupo;
 import com.example.cardapio.service.GroupService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -9,7 +10,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/cardapio/grupos")
-@CrossOrigin(origins = "*")
 public class GroupController {
 
     private final GroupService service;
@@ -25,7 +25,7 @@ public class GroupController {
     }
 
     @PostMapping
-    public Grupo adicionarGrupo(@RequestBody Grupo grupo) {
+    public Grupo adicionarGrupo(@Valid @RequestBody Grupo grupo) {
         return service.salvarGrupo(grupo);
     }
 }

@@ -1,6 +1,7 @@
 package com.example.cardapio.service;
 
 import com.example.cardapio.dto.*;
+import com.example.cardapio.exception.ResourceNotFoundException;
 import com.example.cardapio.model.LinkMesaComanda;
 import com.example.cardapio.model.Produto;
 import com.example.cardapio.model.VendaCabecalho;
@@ -9,6 +10,8 @@ import com.example.cardapio.repository.LinkMesaComandaRepository;
 import com.example.cardapio.repository.ProdutoRepository;
 import com.example.cardapio.repository.VendaCabecalhoRepository;
 import com.example.cardapio.repository.VendaDetalheRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,26 +26,28 @@ import java.util.stream.Collectors;
 @Service
 public class SaleService {
 
+    private static final Logger log = LoggerFactory.getLogger(SaleService.class);
+
     private final VendaDetalheRepository vendaDetalheRepository;
     private final ProdutoRepository produtoRepository;
     private final LinkMesaComandaRepository linkMesaComandaRepository;
-
-    @Autowired
-    private VendaCabecalhoRepository vendaCabecalhoRepository;
+    private final VendaCabecalhoRepository vendaCabecalhoRepository;
 
     @Autowired
     public SaleService(VendaDetalheRepository vendaDetalheRepository,
                        ProdutoRepository produtoRepository,
-                       LinkMesaComandaRepository linkMesaComandaRepository) {
+                       LinkMesaComandaRepository linkMesaComandaRepository,
+                       VendaCabecalhoRepository vendaCabecalhoRepository) {
         this.vendaDetalheRepository = vendaDetalheRepository;
         this.produtoRepository = produtoRepository;
         this.linkMesaComandaRepository = linkMesaComandaRepository;
+        this.vendaCabecalhoRepository = vendaCabecalhoRepository;
     }
 
     /**
-     * Retorna todos os pedidos da mesa agrupados por cliente/comanda,
-     * incluindo o nome de quem fez o pedido.
+     * Retorna todos os pedidos da mesa agrupados por cliente/comanda.
      */
+    @Transactional(readOnly = true)
     public List<PedidoMesaGroupDTO> listarPedidosMesa(Long idMesa) {
         List<ItemPedidoMesaView> itens = vendaDetalheRepository.findItensPedidosPorMesa(idMesa);
         List<ItemPedidoMesaDTO> dtos = itens.stream().map(ItemPedidoMesaDTO::from).toList();
@@ -72,9 +77,9 @@ public class SaleService {
     }
 
     /**
-     * Verifica se a mesa possui uma comanda em aberto usando a query exata:
-     * SELECT * FROM gc_venda_cabecalho WHERE id_mesa = :idMesa AND NOT ENCERRADA AND NOT CANCELADA;
+     * Verifica se a mesa possui uma comanda em aberto.
      */
+    @Transactional(readOnly = true)
     public MesaStatusResponseDTO verificarStatusMesa(Long idMesa) {
         Optional<VendaCabecalho> comandaOpt = vendaCabecalhoRepository.findMesaAberta(idMesa);
         if (comandaOpt.isPresent()) {
@@ -95,7 +100,6 @@ public class SaleService {
         VendaCabecalho cabecalho;
 
         if (comandaOpt.isEmpty()) {
-            // Mesa está livre: cria novo VendaCabecalho
             VendaCabecalho novo = new VendaCabecalho();
             novo.setIdMesa(dto.idMesa());
             novo.setAtendenteId(1L);
@@ -109,15 +113,12 @@ public class SaleService {
                     novo.setTaxaGarcom(Double.valueOf(taxaServicoObj.toString()));
                 }
             } catch (Exception e) {
-                // Ignore tax error if missing
+                log.warn("Taxa de serviço padrão não localizada no banco: {}", e.getMessage());
             }
 
             cabecalho = vendaCabecalhoRepository.save(novo);
         } else {
-            // Mesa já está aberta
             cabecalho = comandaOpt.get();
-
-            // Tratamento 1: Caso o usuário leia o QR Code direto (sem o token/comandaId) e a mesa já está em aberto
             boolean veioporLink = dto.idGcVendaCabecalhoToken() != null && dto.idGcVendaCabecalhoToken().equals(cabecalho.getId());
 
             if (!veioporLink) {
@@ -125,7 +126,6 @@ public class SaleService {
             }
         }
 
-        // Criar o vínculo do cliente em gc_link_mesa_comanda
         LinkMesaComanda link = new LinkMesaComanda();
         link.setIdMesa(dto.idMesa());
         link.setIdGcVendaCabecalho(cabecalho.getId());
@@ -168,7 +168,7 @@ public class SaleService {
                             novo.setTaxaGarcom(Double.valueOf(taxaServicoObj.toString()));
                         }
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        log.warn("Erro ao carregar taxa de serviço: {}", e.getMessage());
                     }
 
                     return vendaCabecalhoRepository.save(novo);
@@ -207,6 +207,7 @@ public class SaleService {
         return cabecalho;
     }
 
+    @Transactional(readOnly = true)
     public List<StatusItemPedidoDTO> listarPedidosAtivos() {
         List<PedidoStatusView> resultado = vendaDetalheRepository.findAllComNomeProduto();
         return resultado.stream()
@@ -214,6 +215,7 @@ public class SaleService {
                 .toList();
     }
 
+    @Transactional(readOnly = true)
     public List<StatusItemPedidoDTO> getStatusPedido(Long vendaCabecalhoId) {
         List<PedidoStatusView> resultado = vendaDetalheRepository.findByVendaCabecalhoId(vendaCabecalhoId);
         return resultado.stream()
@@ -225,7 +227,7 @@ public class SaleService {
     public VendaCabecalho solicitarConta(Long idMesa) {
         VendaCabecalho cabecalho = vendaCabecalhoRepository
                 .findMesaAberta(idMesa)
-                .orElseThrow(() -> new RuntimeException("Nenhuma venda em aberto encontrada para esta mesa"));
+                .orElseThrow(() -> new ResourceNotFoundException("Nenhuma venda em aberto encontrada para a mesa " + idMesa));
 
         cabecalho.setSolicitadoConta(true);
         return vendaCabecalhoRepository.save(cabecalho);
@@ -235,15 +237,9 @@ public class SaleService {
     public VendaCabecalho solicitarContaParcial(SolicitacaoContaParcialDTO dto) {
         VendaCabecalho cabecalho = vendaCabecalhoRepository
                 .findMesaAberta(dto.idMesa())
-                .orElseThrow(() -> new RuntimeException("Nenhuma venda em aberto encontrada para esta mesa"));
+                .orElseThrow(() -> new ResourceNotFoundException("Nenhuma venda em aberto encontrada para a mesa " + dto.idMesa()));
 
-        if (Boolean.TRUE.equals(dto.solicitarTodos())) {
-            cabecalho.setSolicitadoConta(true);
-        } else {
-            // Em solicitações parciais por cliente/itens, marca a flag de solicitado conta
-            cabecalho.setSolicitadoConta(true);
-        }
-
+        cabecalho.setSolicitadoConta(true);
         return vendaCabecalhoRepository.save(cabecalho);
     }
 }

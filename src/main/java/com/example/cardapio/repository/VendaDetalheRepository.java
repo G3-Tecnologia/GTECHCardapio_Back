@@ -1,25 +1,17 @@
 package com.example.cardapio.repository;
 
+import com.example.cardapio.dto.ItemPedidoMesaView;
 import com.example.cardapio.dto.PedidoStatusView;
 import com.example.cardapio.model.VendaDetalhe;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+@Repository
 public interface VendaDetalheRepository extends JpaRepository<VendaDetalhe, Long> {
-
-    /**
-     * Retorna todos os itens de pedidos ativos:
-     * venda não encerrada, não cancelada e item não cancelado.
-     */
-    @Query(value = """
-            SELECT g.* FROM gc_venda_detalhe g
-            INNER JOIN gc_venda_cabecalho c ON c.id = g.gc_venda_cabecalho_id
-            WHERE NOT c.encerrada AND NOT c.cancelada AND NOT g.cancelado
-            """, nativeQuery = true)
-    List<VendaDetalhe> findItensPedidosAtivos();
 
     /**
      * Busca todos os itens ativos da view com JOIN na tabela produto para
@@ -89,5 +81,5 @@ public interface VendaDetalheRepository extends JpaRepository<VendaDetalhe, Long
             WHERE c.id_mesa = :idMesa AND NOT c.encerrada AND NOT c.cancelada AND (d.cancelado IS NULL OR NOT d.cancelado)
             ORDER BY d.id ASC
             """, nativeQuery = true)
-    List<com.example.cardapio.dto.ItemPedidoMesaView> findItensPedidosPorMesa(@Param("idMesa") Long idMesa);
+    List<ItemPedidoMesaView> findItensPedidosPorMesa(@Param("idMesa") Long idMesa);
 }

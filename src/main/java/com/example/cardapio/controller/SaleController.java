@@ -1,10 +1,13 @@
 package com.example.cardapio.controller;
 
 import com.example.cardapio.dto.*;
+import com.example.cardapio.model.VendaCabecalho;
 import com.example.cardapio.service.SaleService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -17,8 +20,9 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 @RestController
 @RequestMapping("/cardapio/venda")
-@CrossOrigin(origins = "*")
 public class SaleController {
+
+    private static final Logger log = LoggerFactory.getLogger(SaleController.class);
 
     private final SaleService service;
     private final ObjectMapper objectMapper;
@@ -36,7 +40,7 @@ public class SaleController {
 
     /**
      * GET /cardapio/venda/mesa/{idMesa}/status
-     * Retorna se a mesa possui uma comanda em aberto (via query SELECT * FROM gc_venda_cabecalho WHERE id_mesa = :idMesa AND NOT ENCERRADA AND NOT CANCELADA).
+     * Retorna se a mesa possui uma comanda em aberto.
      */
     @GetMapping("/mesa/{idMesa}/status")
     public MesaStatusResponseDTO getMesaStatus(@PathVariable Long idMesa) {
@@ -45,7 +49,7 @@ public class SaleController {
 
     /**
      * GET /cardapio/venda/mesa/{idMesa}/pedidos
-     * Retorna todos os pedidos da mesa agrupados por cliente, trazendo o nome do cliente.
+     * Retorna todos os pedidos da mesa agrupados por cliente.
      */
     @GetMapping("/mesa/{idMesa}/pedidos")
     public List<PedidoMesaGroupDTO> getPedidosMesa(@PathVariable Long idMesa) {
@@ -54,7 +58,7 @@ public class SaleController {
 
     /**
      * POST /cardapio/venda/mesa/entrar
-     * Cadastra a entrada do cliente na mesa, gerando um registro em gc_link_mesa_comanda.
+     * Cadastra a entrada do cliente na mesa.
      */
     @PostMapping("/mesa/entrar")
     public ClienteEntradaResponseDTO entrarNaMesa(@Valid @RequestBody ClienteEntradaDTO dto) {
@@ -63,15 +67,15 @@ public class SaleController {
 
     /** Registra um novo pedido. */
     @PostMapping
-    public com.example.cardapio.model.VendaCabecalho registrarVenda(
+    public VendaCabecalho registrarVenda(
             @RequestParam("idMesa") Long idMesa,
-            @RequestBody List<VendaItemDTO> itens) {
+            @Valid @RequestBody List<VendaItemDTO> itens) {
         return service.registrarVenda(idMesa, itens);
     }
 
     /**
      * GET /cardapio/venda/ativos
-     * Retorna snapshot atual dos pedidos ativos com nome do produto de produto.DESCRICAOPDV.
+     * Retorna snapshot atual dos pedidos ativos.
      */
     @GetMapping("/ativos")
     public List<StatusItemPedidoDTO> getPedidosAtivos() {
@@ -92,7 +96,7 @@ public class SaleController {
      * Marca a venda atual da mesa como solicitadoConta = true
      */
     @PostMapping("/mesa/{idMesa}/solicitar-conta")
-    public com.example.cardapio.model.VendaCabecalho solicitarConta(@PathVariable Long idMesa) {
+    public VendaCabecalho solicitarConta(@PathVariable Long idMesa) {
         return service.solicitarConta(idMesa);
     }
 
@@ -101,7 +105,7 @@ public class SaleController {
      * Solicita conta parcial ou total vinculada aos itens / cliente.
      */
     @PostMapping("/solicitar-conta-parcial")
-    public com.example.cardapio.model.VendaCabecalho solicitarContaParcial(@RequestBody SolicitacaoContaParcialDTO dto) {
+    public VendaCabecalho solicitarContaParcial(@Valid @RequestBody SolicitacaoContaParcialDTO dto) {
         return service.solicitarContaParcial(dto);
     }
 
@@ -125,6 +129,7 @@ public class SaleController {
                     .name("pedidos-ativos")
                     .data(objectMapper.writeValueAsString(ativos)));
         } catch (IOException e) {
+            log.warn("Erro ao enviar evento inicial SSE: {}", e.getMessage());
             emitters.remove(emitter);
             emitter.completeWithError(e);
         }
@@ -144,6 +149,7 @@ public class SaleController {
         try {
             ativos = service.listarPedidosAtivos();
         } catch (Exception e) {
+            log.error("Erro ao listar pedidos ativos para broadcast SSE: {}", e.getMessage());
             return;
         }
 
@@ -151,6 +157,7 @@ public class SaleController {
         try {
             json = objectMapper.writeValueAsString(ativos);
         } catch (Exception e) {
+            log.error("Erro ao serializar pedidos ativos para JSON: {}", e.getMessage());
             return;
         }
 

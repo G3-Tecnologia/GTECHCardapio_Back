@@ -103,37 +103,35 @@ public class Produto {
         this.grupo = grupo;
     }
 
-    /*
-     * public String getPromocao() {
-     * return promocao;
-     * }
-     * 
-     * public void setPromocao(String promocao) {
-     * this.promocao = promocao;
-     * }
-     * 
-     * public BigDecimal getPrecoPromocional() {
-     * return precoPromocional;
-     * }
-     * 
-     * public void setPrecoPromocional(BigDecimal precoPromocional) {
-     * this.precoPromocional = precoPromocional;
-     * }
-     * 
-     * public LocalDateTime getDataInicioPromocao() {
-     * return dataInicioPromocao;
-     * }
-     * 
-     * public void setDataInicioPromocao(LocalDateTime dataInicioPromocao) {
-     * this.dataInicioPromocao = dataInicioPromocao;
-     * }
-     * 
-     * public LocalDateTime getDataFimPromocao() {
-     * return dataFimPromocao;
-     * }
-     * 
-     * public void setDataFimPromocao(LocalDateTime dataFimPromocao) {
-     * this.dataFimPromocao = dataFimPromocao;
-     * }
-     */
+    public String getPromocao() {
+        return promocao;
+    }
+
+    public void setPromocao(String promocao) {
+        this.promocao = promocao;
+    }
+
+    public BigDecimal getPrecoPromocional() {
+        return precoPromocional;
+    }
+
+    public void setPrecoPromocional(BigDecimal precoPromocional) {
+        this.precoPromocional = precoPromocional;
+    }
+
+    public LocalDateTime getDataInicioPromocao() {
+        return dataInicioPromocao;
+    }
+
+    public void setDataInicioPromocao(LocalDateTime dataInicioPromocao) {
+        this.dataInicioPromocao = dataInicioPromocao;
+    }
+
+    public LocalDateTime getDataFimPromocao() {
+        return dataFimPromocao;
+    }
+
+    public void setDataFimPromocao(LocalDateTime dataFimPromocao) {
+        this.dataFimPromocao = dataFimPromocao;
+    }
 }
